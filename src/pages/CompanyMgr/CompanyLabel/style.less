@@ -1,0 +1,56 @@
+@import '~antd/lib/style/themes/default.less';
+
+.labelCard {
+  :global {
+    .ant-card-head-wrapper {
+      position: relative;
+    }
+    .ant-card-head-title {
+      font-size: 20px;
+    }
+    .ant-card-extra {
+      width: 300px;
+      text-align: right;
+    }
+    .antd-pro-components-standard-table-index-tableAlert {
+      display: none;
+    }
+  }
+}
+
+.addLabel {
+  a {
+    position: absolute;
+    top: 25px;
+    left: 100px;
+  }
+  :global {
+    .ant-form-item {
+      display: inline-block;
+      margin: 0;
+    }
+    .ant-btn-primary {
+      margin-top: 4px;
+      margin-left: -2px;
+      border-radius: 0 4px 4px 0;
+    }
+    input {
+      border-radius: 4px 0 0 4px;
+    }
+  }
+}
+
+.labelTable {
+  :global {
+    .ant-table-selection-column {
+      display: none;
+    }
+  }
+}
+.handleIcon {
+  i {
+    margin-right: 10px;
+    color: #1890ff;
+    cursor: pointer;
+  }
+}

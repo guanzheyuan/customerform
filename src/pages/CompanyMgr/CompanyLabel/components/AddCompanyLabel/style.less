@@ -1,0 +1,99 @@
+@import '~antd/lib/style/themes/default.less';
+
+.stepOneIndex {
+  position: relative;
+  width: 500px;
+  margin: auto;
+  :global {
+    .ant-form-item {
+      margin-bottom: 15px;
+    }
+  }
+}
+
+.addAction {
+  text-align: center;
+}
+
+.skipStep:hover {
+  text-decoration: underline;
+}
+
+.formOther {
+  :global {
+    // .ant-form-item-label {
+    //   text-align: left;
+    // }
+    // .ant-col-sm-20 {
+    //   width: 100%;
+    // }
+    .ant-select {
+      display: inline-block;
+      width: 30%;
+    }
+    .ant-select-selection--single {
+      width: 100%;
+    }
+    input {
+      display: inline-block;
+      width: 30%;
+    }
+    .ant-form-item-children button {
+      margin-right: 10%;
+    }
+  }
+}
+
+.addBtn {
+  display: inline-block;
+  width: 10%;
+  margin-right: 0 !important;
+  padding: 0;
+  text-align: right;
+  border: none;
+  box-shadow: none;
+}
+
+.steps3 {
+  width: 808px;
+  margin: 0 auto !important;
+}
+.leftPage {
+  position: absolute;
+  bottom: 45px;
+  left: 70px;
+}
+.rightPage {
+  position: absolute;
+  right: 70px;
+  bottom: 45px;
+}
+
+.steps4 {
+  width: 600px;
+  margin: 0 auto !important;
+  .otherStep4Form {
+    display: inline-block;
+    width: 50%;
+    text-align: right;
+  }
+  :global {
+    .ant-form-item-label {
+      vertical-align: top;
+    }
+    .ant-form-item-control-wrapper {
+      display: inline-block;
+    }
+  }
+  .companyList {
+    :global {
+      .ant-list-item {
+        border-bottom: none !important;
+      }
+      .ant-spin-nested-loading {
+        height: 200px;
+        overflow: auto;
+      }
+    }
+  }
+}

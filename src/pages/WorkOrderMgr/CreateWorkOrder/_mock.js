@@ -1,0 +1,30 @@
+export default {
+  '/sop/queryWorkTask': [
+    {
+      id: 1,
+      taskNo: 'task-no-1',
+      taskType: 0,
+      taskTypeName: '企业数据采集',
+      taskStatusName: '草稿',
+      title: '经济普查',
+      auditPersonName: '李主任',
+      procResult: '通过',
+      acceptPerson: '李主任',
+      taskBeginTime: '2019-06-01',
+      taskEndTime: '2019-06-13',
+    },
+    {
+      id: 2,
+      taskNo: 'task-no-2',
+      taskType: 0,
+      taskTypeName: '企业数据采集',
+      taskStatusName: '草稿',
+      title: '经济普查',
+      auditPersonName: '李主任',
+      procResult: '通过',
+      acceptPerson: '李主任',
+      taskBeginTime: '2019-06-01',
+      taskEndTime: '2019-06-13',
+    },
+  ],
+};

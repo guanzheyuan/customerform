@@ -1,0 +1,89 @@
+@import '~antd/lib/style/themes/default.less';
+@import '~@/utils/utils.less';
+
+.searchTree {
+  display: block;
+  width: 100%;
+  height: 400px;
+  max-height: 400px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.gridMap {
+  width: '100%';
+  height: 500px;
+}
+.overLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 9;
+  width: 100%;
+  padding-left: 10px;
+  background: #f4f9ff;
+}
+
+.overOption {
+  position: absolute;
+  top: 60px;
+  right: 10px;
+  z-index: 9;
+  padding: 0 5px;
+  background: white;
+  border: 1px solid #d8d8d8;
+}
+.overIcon {
+  width: 30px;
+  max-height: 40px;
+  margin: 10px auto;
+  cursor: pointer;
+}
+
+.optBtn {
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  margin-right: 5px;
+  margin-left: 5px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  cursor: pointer;
+}
+.addGrid {
+  background-image: url('../../assets/addgrid.png');
+}
+.addGrid:hover {
+  background-image: url('../../assets/addgrid_active.png');
+}
+.editGrid {
+  background-image: url('../../assets/editgrid.png');
+}
+.editGrid:hover {
+  background-image: url('../../assets/editgrid_active.png');
+}
+.addArea {
+  background-image: url('../../assets/addarea.png');
+}
+.addArea:hover {
+  background-image: url('../../assets/addarea_active.png');
+}
+.editArea {
+  background-image: url('../../assets/editarea.png');
+}
+.editArea:hover {
+  background-image: url('../../assets/editarea_active.png');
+}
+.deleteNode {
+  background-image: url('../../assets/deletenode.png');
+}
+.deleteNode:hover {
+  background-image: url('../../assets/deletenode_active.png');
+}
+.detail {
+  background-image: url('../../assets/detail.png');
+}
+.detail:hover {
+  background-image: url('../../assets/detail_active.png');
+}
