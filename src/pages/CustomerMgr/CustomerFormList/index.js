@@ -8,69 +8,79 @@ import {
   Button,
   Input,
   Table,
-  //   Select,
+  Modal,
   DatePicker,
   Divider,
   Popconfirm,
-  //   message,
+  Select,
 } from 'antd';
-import Link from 'umi/link';
+import moment from 'moment';
 
-// import styles from './style.less';
+import styles from './style.less';
 
 const FormItem = Form.Item;
-// const { Option } = Select;
 
 @Form.create()
-@connect(({ companyArchive }) => ({
-  companyArchive,
-  // loading: loading.effects['companyArchive/fetchArchive'],
+@connect(({ customerFormList, loading }) => ({
+  customerFormList,
+  loading: loading.effects['customerFormList/qryList'],
 }))
-class CompanyArchive extends Component {
+class CustomerFormList extends Component {
   columns = [
     {
-      title: '标签编码',
-      dataIndex: 'labelEname',
+      title: '事项名称',
+      dataIndex: 'name',
     },
     {
-      title: '标签名称',
-      dataIndex: 'labelCname',
+      title: '表单版本',
+      dataIndex: 'version',
     },
     {
-      title: '内容类型',
-      dataIndex: 'type',
+      title: '配置时间',
+      dataIndex: 'createTime',
       align: 'center',
-      defaultSortOrder: 'descend',
-      sorter: (a, b) => {
-        const stringA = a.type.toUpperCase(); // ignore upper and lowercase
-        const stringB = b.type.toUpperCase(); // ignore upper and lowercase
-        if (stringA < stringB) {
-          return -1;
-        }
-        if (stringA > stringB) {
-          return 1;
-        }
-        return 0;
-      },
     },
     {
-      title: '最后修改时间',
-      dataIndex: 'updateDate',
+      title: '状态',
+      dataIndex: 'state',
+      render: text => {
+        switch (text) {
+          case 'A':
+            return '有效';
+          default:
+            return '无效';
+        }
+      },
     },
     {
       title: '操作',
       render: (text, record) => {
+        const { formType } = record;
+        if (formType === 'UED') {
+          return (
+            <Fragment>
+              <Divider type="vertical" />
+              <a onClick={() => this.updateFormData(record, false)}>编辑</a>
+              <Divider type="vertical" />
+              <Popconfirm
+                title="确定删除?"
+                onConfirm={() => {
+                  this.handleDelete(record.id);
+                }}
+              >
+                <a href="#">删除</a>
+              </Popconfirm>
+              <Divider type="vertical" />
+              <a onClick={() => this.updateFormData(record, false)}>设计</a>
+              <Divider type="vertical" />
+              <a onClick={() => this.updateFormData(record, false)}>预览</a>
+            </Fragment>
+          );
+        }
         return (
           <Fragment>
-            <a
-              onClick={() => {
-                this.changeArchiveState(record);
-              }}
-            >
-              {record.isValid === '1' ? '禁用' : '启用'}
-            </a>
             <Divider type="vertical" />
-            <a onClick={() => this.updateArchive(record, false)}>编辑</a>
+            <a onClick={() => this.updateFormData(record, false)}>编辑</a>
             <Divider type="vertical" />
             <Popconfirm
               title="确定删除?"
@@ -80,6 +90,8 @@ class CompanyArchive extends Component {
             >
               <a href="#">删除</a>
             </Popconfirm>
+            <Divider type="vertical" />
+            <a onClick={() => this.updateFormData(record, false)}>设计</a>
           </Fragment>
         );
       },
@@ -89,80 +101,148 @@ class CompanyArchive extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      pagination: {
-        pageNum: 0,
-        pageSize: 10,
-      },
+      confirmLoading: false,
+      visible: false,
+      modelTitle: '',
+      formRowData: {},
     };
   }
 
   componentDidMount() {
-    // const { dispatch } = this.props;
-    // dispatch({
-    //   type: 'companyArchive/fetchContentType',
-    // });
-    // this.fetch();
+    // 查询列表数据
+    this.loadData();
   }
 
-  fetch = () => {
-    const { form } = this.props;
-    const result = form.getFieldsValue();
-    this.setState({
-      searchParam: result,
-    });
-    const { pagination, searchParam } = this.state;
-    const params = {
-      ...pagination,
-      ...searchParam,
-    };
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'companyArchive/fetchArchive',
-      params,
-    });
-  };
-
-  handleTableChange = page => {
-    this.setState(
-      {
-        pagination: { pageNum: page.current - 1, pageSize: page.pageSize },
-      },
-      this.fetch
-    );
-  };
-
-  handleDelete = id => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'companyArchive/deleteArchive',
-      id,
-      callback: this.fetch,
-    });
-  };
-
+  // 点击查询按钮
   handleSearch = e => {
     e.preventDefault();
     const { form } = this.props;
     const result = form.getFieldsValue();
-    const { pagination } = this.state;
+    const beginTime = moment(result.beginTime).format('YYYY-MM-DD HH:mm:ss');
+    const endTime = moment(result.endTime).format('YYYY-MM-DD HH:mm:ss');
+    const { name } = this.state;
+    const inParam = {
+      name: name,
+      beginTime: beginTime,
+      endTime: endTime,
+    };
     this.setState(
       {
-        searchParam: result,
-        pagination,
+        searchParam: inParam,
       },
-      console.log(result)
-      //   this.fetch
+      this.loadData
     );
   };
 
-  changeArchiveState = record => {
+  // 查询列表数据
+  loadData = () => {
+    const { searchParam } = this.state;
+    const params = {
+      ...searchParam,
+    };
     const { dispatch } = this.props;
-    const isValid = record.isValid === '1' ? 0 : 1;
-    const param = { id: record.id, isValid };
     dispatch({
-      type: 'companyArchive/changeArchiveState',
-      payload: param,
-      callback: this.fetch,
+      type: 'customerFormList/qryList',
+      params,
+    });
+  };
+
+  // 新增事件
+  handleAdd = () => {
+    // 调出弹出框
+    this.setState({
+      type: 'add',
+      visible: true,
+      modelTitle: '新增',
+      confirmLoading: false,
+      formRowData: {
+        id: '',
+        addCode: '',
+        addName: '',
+        formType: 'UED',
+        common: '',
+      },
+    });
+  };
+
+  // 新增表单
+  handleAddSubmit = e => {
+    e.preventDefault();
+    this.setState({
+      confirmLoading: true,
+    });
+    const { form, dispatch } = this.props;
+    const { type } = this.state;
+    form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        const params = {
+          id: values.id,
+          code: values.addCode,
+          name: values.addName,
+          formType: values.formType,
+          common: values.common,
+        };
+        if (type === 'add') {
+          dispatch({
+            type: 'customerFormList/addForm',
+            params,
+            callback: this.clickCallBack,
+          });
+        } else if (type === 'edit') {
+          dispatch({
+            type: 'customerFormList/editForm',
+            params,
+            callback: this.clickCallBack,
+          });
+        }
+      } else {
+        this.setState({
+          confirmLoading: false,
+        });
+      }
+    });
+  };
+
+  // 编辑事件
+  updateFormData = data => {
+    this.setState({
+      visible: true,
+      modelTitle: '编辑',
+      type: 'edit',
+      confirmLoading: false,
+      formRowData: {
+        id: data.id,
+        addCode: data.code,
+        addName: data.name,
+        formType: data.formType,
+        common: data.common,
+      },
+    });
+  };
+
+  clickCallBack = () => {
+    this.setState(
+      {
+        visible: false,
+      },
+      this.loadData
+    );
+  };
+
+  // 弹出框关闭事件
+  handleCancel = () => {
+    this.setState({
+      visible: false,
+    });
+  };
+
+  // 删除事件
+  handleDelete = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'customerFormList/deleteFormData',
+      id,
+      callback: this.clickCallBack,
     });
   };
 
@@ -170,7 +250,6 @@ class CompanyArchive extends Component {
   renderForm() {
     const {
       form: { getFieldDecorator },
-      //   companyArchive: { archiveContentTypeList },
     } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -206,44 +285,112 @@ class CompanyArchive extends Component {
 
   render() {
     const {
-      companyArchive: {
-        archiveListResult: { list, total },
-      },
+      customerFormList: { formList },
       loading,
+      form: { getFieldDecorator },
     } = this.props;
     const {
-      pagination: { pageSize },
+      visible,
+      modelTitle,
+      confirmLoading,
+      formRowData: { id, addCode, addName, formType, common },
     } = this.state;
-
-    const paginationProps = {
-      showSizeChanger: true,
-      showQuickJumper: true,
-      pageSize,
-      total,
-    };
+    const { Option } = Select;
     return (
-      <Card bordered={false}>
-        <div className={styles.tableList}>
-          <div className={styles.tableListForm}>{this.renderForm()}</div>
-          <div className={styles.tableListOperator}>
-            <Link to={{ pathname: '/company/addcompanydetail', state: {} }}>
-              <Button icon="plus" type="primary">
+      <div>
+        <Card bordered={false}>
+          <div className={styles.tableList}>
+            <div className={styles.tableListForm}>{this.renderForm()}</div>
+            <div className={styles.tableListOperator}>
+              <Button icon="plus" type="primary" onClick={this.handleAdd}>
                 新建标签
               </Button>
-            </Link>
+            </div>
+            <Table
+              rowKey="id"
+              loading={loading}
+              dataSource={formList}
+              columns={this.columns}
+              onChange={this.handleTableChange}
+            />
           </div>
-          <Table
-            rowKey="id"
-            loading={loading}
-            dataSource={list}
-            columns={this.columns}
-            pagination={paginationProps}
-            onChange={this.handleTableChange}
-          />
-        </div>
-      </Card>
+        </Card>
+        <Modal
+          title={modelTitle}
+          visible={visible}
+          onOk={this.handleAddSubmit}
+          onCancel={this.handleCancel}
+          confirmLoading={confirmLoading}
+          destroyOnClose="true"
+        >
+          <Form layout="inline">
+            <Row gutter={{ md: 24 }}>
+              <Col md={0}>
+                <Form.Item>
+                  {getFieldDecorator('id', {
+                    initialValue: id,
+                  })(<Input />)}
+                </Form.Item>
+              </Col>
+              <Col md={12}>
+                <Form.Item>
+                  {getFieldDecorator('addCode', {
+                    initialValue: addCode,
+                    rules: [
+                      {
+                        required: true,
+                        message: '请输入表单编码',
+                      },
+                    ],
+                  })(<Input placeholder="表单编码" />)}
+                </Form.Item>
+              </Col>
+              <Col md={12}>
+                <Form.Item>
+                  {getFieldDecorator('addName', {
+                    initialValue: addName,
+                    rules: [
+                      {
+                        required: true,
+                        message: '请输入表单编码',
+                      },
+                    ],
+                  })(<Input placeholder="表单名称" />)}
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={{ md: 24 }}>
+              <Col md={12}>
+                <Form.Item label="表单类型">
+                  {getFieldDecorator('formType', {
+                    initialValue: formType,
+                  })(
+                    <Select>
+                      <Option value="UED">模板设计</Option>
+                      <Option value="UP">自定义类型</Option>
+                    </Select>
+                  )}
+                </Form.Item>
+              </Col>
+              <Col md={12}>
+                <Form.Item>
+                  {getFieldDecorator('common', {
+                    initialValue: common,
+                    rules: [
+                      {
+                        required: true,
+                        message: '请输入表单说明',
+                      },
+                    ],
+                  })(<Input placeholder="表单说明" />)}
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+        </Modal>
+      </div>
     );
   }
 }
 
-export default CompanyArchive;
+export default CustomerFormList;

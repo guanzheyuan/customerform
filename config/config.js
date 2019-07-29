@@ -86,29 +86,8 @@ export default {
   //   },
   // },
   proxy: {
-    '/api/oauth': {
-      target: 'http://10.45.67.181:7080/auth/',
-      changeOrigin: true,
-      pathRewrite: { '^/api': '' },
-    },
-    '/api/ecogrid': {
-      target: 'http://10.45.67.181:18081',
-      changeOrigin: true,
-      pathRewrite: { '^/api': '' },
-    },
-    '/api/portal': {
-      target: 'http://10.45.67.181:7080',
-      changeOrigin: true,
-      pathRewrite: { '^/api': '' },
-    },
-    '/api/entermgr': {
-      target: 'http://10.45.67.181:18083',
-      changeOrigin: true,
-      pathRewrite: { '^/api': '' },
-    },
-    '/api/ecorun': {
-      // target: 'http://10.45.28.39:18085',
-      target: 'http://10.45.67.181:18085',
+    '/api/customer': {
+      target: 'http://10.45.67.193:8580',
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
     },

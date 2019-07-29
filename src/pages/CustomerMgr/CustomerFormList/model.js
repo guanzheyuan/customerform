@@ -1,30 +1,52 @@
-// import { message } from 'antd';
-import { queryCompanyArchive } from './service';
+import { message } from 'antd';
+import { queryFormList, addForm, editForm, deleteFormData } from './service';
 
 export default {
-  namespace: 'companyArchive',
+  namespace: 'customerFormList',
   state: {
-    archiveListResult: {},
-    archiveContentTypeList: [],
-    orgUserData: undefined,
-    archiveInfo: {
-      archiveBaseInfo: {},
-    },
+    formList: [],
   },
   effects: {
-    *fetchArchive({ params }, { call, put }) {
-      const result = yield call(queryCompanyArchive, params);
+    *qryList({ params }, { call, put }) {
+      const result = yield call(queryFormList, params);
       yield put({
-        type: 'save',
-        archiveListResult: result,
+        type: 'formlist',
+        formList: result,
       });
+    },
+    *addForm({ params, callback }, { call }) {
+      const result = yield call(addForm, params);
+      if (result) {
+        message.success('新增成功');
+      } else {
+        message.error('新增失败');
+      }
+      callback();
+    },
+    *editForm({ params, callback }, { call }) {
+      const result = yield call(editForm, params);
+      if (result) {
+        message.success('编辑成功');
+      } else {
+        message.error('编辑失败');
+      }
+      callback();
+    },
+    *deleteFormData({ id, callback }, { call }) {
+      const result = yield call(deleteFormData, id);
+      if (result) {
+        message.success('删除成功');
+      } else {
+        message.error('删除失败');
+      }
+      callback();
     },
   },
   reducers: {
-    save(state, { archiveListResult }) {
+    formlist(state, { formList }) {
       return {
         ...state,
-        archiveListResult,
+        formList,
       };
     },
   },
